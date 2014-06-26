@@ -1,0 +1,2 @@
+1.0.0 - 2043-01-02 - Lew Ayotte
+	Initial Release
