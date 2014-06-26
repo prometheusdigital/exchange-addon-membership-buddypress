@@ -48,7 +48,7 @@ function it_exchange_membership_buddypress_addon_show_version_nag() {
 add_action( 'admin_notices', 'it_exchange_membership_buddypress_addon_show_version_nag' );
 
 /**
- * Buddy Press modifies the Post ID (sets to 0 or -9999) for the non-WordPress pages off of 
+ * BuddyPress modifies the Post ID (sets to 0 or -9999) for the non-WordPress pages off of 
  * the Members and Activity and activity pages 
  * (e.g. /members/lew or http://lew.dev.ithemes.com/members/test7/activity/mentions/)
  *
@@ -84,7 +84,7 @@ function it_exchange_membership_buddypress_addon_template_include( $template ) {
 add_filter( 'template_include', 'it_exchange_membership_buddypress_addon_template_include', 1 );
 
 /**
- * We hook into 'the_content' (earlier than Buddy Press), so we check to see if the restricted or dripped
+ * We hook into 'the_content' (earlier than BuddyPress), so we check to see if the restricted or dripped
  * globals are true and if so, we remove the buddypress content filter because Exchange Membership
  * hooks into the_content to supply the restricted/dripped messages
  *
@@ -95,7 +95,7 @@ add_filter( 'template_include', 'it_exchange_membership_buddypress_addon_templat
 function it_exchange_membership_buddypress_addon_remove_bp_replace_the_content( $content ) {
 	global $it_exchange_membership_buddypress_addon_is_content_restricted, $it_exchange_membership_buddypress_addon_is_content_dripped, $post, $it_exchange_membership_buddypress_addon_post_id;
 	
-	$post->ID = $it_exchange_membership_buddypress_addon_post_id; //Buddy Press sets this to 0 sometimes... we want it to be the  actual page ID though, which we set in the it_exchange_membership_buddypress_addon_template_include() function.
+	$post->ID = $it_exchange_membership_buddypress_addon_post_id; //BuddyPress sets this to 0 sometimes... we want it to be the  actual page ID though, which we set in the it_exchange_membership_buddypress_addon_template_include() function.
 	
 	if ( $it_exchange_membership_buddypress_addon_is_content_restricted || $it_exchange_membership_buddypress_addon_is_content_dripped )
 		remove_filter( 'the_content', 'bp_replace_the_content' );
