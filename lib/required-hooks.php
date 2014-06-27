@@ -66,11 +66,11 @@ add_action( 'admin_notices', 'it_exchange_membership_buddypress_addon_show_versi
  * @return void
 */
 function it_exchange_membership_buddypress_addon_template_include( $template ) {
-	global $it_exchange_membership_buddypress_addon_is_content_restricted, $it_exchange_membership_buddypress_addon_is_content_dripped, $post, $it_exchange_membership_buddypress_addon_post_id;
-	$it_exchange_membership_buddypress_addon_is_content_restricted = $it_exchange_membership_buddypress_addon_is_content_dripped = false;
-	$it_exchange_membership_buddypress_addon_post_id = $post->ID;
-
-	if ( is_buddypress() ) {
+	if ( function_exists( 'is_buddypress' ) && is_buddypress() ) {
+		global $it_exchange_membership_buddypress_addon_is_content_restricted, $it_exchange_membership_buddypress_addon_is_content_dripped, $post, $it_exchange_membership_buddypress_addon_post_id;
+		$it_exchange_membership_buddypress_addon_is_content_restricted = $it_exchange_membership_buddypress_addon_is_content_dripped = false;
+		$it_exchange_membership_buddypress_addon_post_id = $post->ID;
+		
 		if ( it_exchange_membership_addon_is_content_restricted() ) {
 			$it_exchange_membership_buddypress_addon_is_content_restricted = true;
 		}
@@ -93,12 +93,14 @@ add_filter( 'template_include', 'it_exchange_membership_buddypress_addon_templat
  * @return void
 */
 function it_exchange_membership_buddypress_addon_remove_bp_replace_the_content( $content ) {
-	global $it_exchange_membership_buddypress_addon_is_content_restricted, $it_exchange_membership_buddypress_addon_is_content_dripped, $post, $it_exchange_membership_buddypress_addon_post_id;
-	
-	$post->ID = $it_exchange_membership_buddypress_addon_post_id; //BuddyPress sets this to 0 sometimes... we want it to be the  actual page ID though, which we set in the it_exchange_membership_buddypress_addon_template_include() function.
-	
-	if ( $it_exchange_membership_buddypress_addon_is_content_restricted || $it_exchange_membership_buddypress_addon_is_content_dripped )
-		remove_filter( 'the_content', 'bp_replace_the_content' );
+	if ( function_exists( 'is_buddypress' ) && is_buddypress() ) {
+		global $it_exchange_membership_buddypress_addon_is_content_restricted, $it_exchange_membership_buddypress_addon_is_content_dripped, $post, $it_exchange_membership_buddypress_addon_post_id;
+		
+		if ( $it_exchange_membership_buddypress_addon_is_content_restricted || $it_exchange_membership_buddypress_addon_is_content_dripped ) {
+			$post->ID = $it_exchange_membership_buddypress_addon_post_id; //BuddyPress sets this to 0 sometimes... we want it to be the  actual page ID though, which we set in the it_exchange_membership_buddypress_addon_template_include() function.
+			remove_filter( 'the_content', 'bp_replace_the_content' );
+		}
+	}
 		
 	return $content;
 }
