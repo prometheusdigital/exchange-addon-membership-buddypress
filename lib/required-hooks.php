@@ -105,3 +105,114 @@ function it_exchange_membership_buddypress_addon_remove_bp_replace_the_content( 
 	return $content;
 }
 add_filter( 'the_content', 'it_exchange_membership_buddypress_addon_remove_bp_replace_the_content', 5 );
+
+/**
+ * Determine if we're on a group page and if it is restricted...
+ *
+ * @since 1.0.0
+ *
+ * @return void
+*/
+function it_exchange_membership_buddypress_addon_is_content_restricted( $restriction, $member_access ) {
+	
+	if ( !$restriction ) { //If it's already restricted, just skip this...
+	
+		if ( bp_is_group() ) {
+			
+			$current_group = groups_get_current_group();
+			
+			$group_rules = get_option( '_item-content-rule-buddypress-group-' . $current_group->slug );
+			if ( !empty( $group_rules ) ) {
+				if ( empty( $member_access ) ) return true;
+				foreach( $member_access as $product_id => $txn_id ) {
+					if ( in_array( $product_id, $group_rules ) )
+						return false;	
+				}
+				$restriction = true;
+			}
+			
+		}
+		
+	}
+	
+	return $restriction;
+	
+}
+add_filter( 'it_exchange_membership_addon_is_content_restricted', 'it_exchange_membership_buddypress_addon_is_content_restricted', 10, 2 );
+
+/**
+ * Output BuddyPress User Groups option as available content to restrict
+ *
+ * @since 1.0.0
+ *
+ * @return string
+*/
+function it_exchange_membership_buddypress_addon_get_selections( $return, $selection, $selection_type ) {
+	if ( 'bp-groups' === $selection_type )
+		$selected = 'selected="selected"';
+	else
+		$selected = '';
+				
+	return '<option data-type="bp-groups" value="bp-group" ' . $selected . '>' . __( 'BuddyPress User Groups', 'LION' ) . '</option>';	
+}
+add_filter( 'it_exchange_membership_addon_get_selections', 'it_exchange_membership_buddypress_addon_get_selections', 10, 3 );
+
+/**
+ * Output BuddyPress User Groups options as available content to restrict
+ *
+ * @since 1.0.0
+ *
+ * @return string
+*/
+function it_exchange_membership_buddypress_addon_get_custom_selected_options( $options, $value, $selected ) {
+	
+	//BuddyPress Groups
+	if ( 'bp-groups' === $selected) {
+		$groups = groups_get_groups( array( 'per_page' => false, 'show_hidden' => true, 'populate_extras' => false, 'update_meta_cache' => false ) );
+		foreach ( $groups['groups'] as $group ) {
+				
+			if ( $group->slug === $value )
+				$selected = 'selected="selected"';
+			else
+				$selected = '';
+				
+			$options .= '<option data-type="bp-group" value="' . $group->slug . '" ' . $selected . '>' . $group->name . '</option>';	
+		}
+	}
+	
+	return $options;
+	
+}
+add_filter( 'it_exchange_membership_addon_get_custom_selected_options', 'it_exchange_membership_buddypress_addon_get_custom_selected_options', 10, 3 );
+
+function it_exchange_membership_buddypress_addon_update_content_access_rules_options( $product_id, $selected, $selection, $term ) {
+	
+	if ( 'bp-groups' === $selected) {
+		if ( !( $rules = get_option( '_item-content-rule-buddypress-group-' . $term ) ) )
+			$rules = array();
+			
+		if ( !in_array( $product_id, $rules ) ) {
+			$rules[] = $product_id;
+			update_option( '_item-content-rule-buddypress-group-' . $term,  $rules );
+		}
+	}
+	
+}
+add_action( 'it_exchange_membership_addon_update_content_access_rules_options', 'it_exchange_membership_buddypress_addon_update_content_access_rules_options', 10, 4 );
+
+function it_exchange_membership_buddypress_addon_update_content_access_diff_rules_options( $product_id, $selected, $selection, $term ) {
+	
+	if ( 'bp-groups' === $selected) {
+
+		if ( !( $rules = get_option( '_item-content-rule-buddypress-group-' . $term ) ) )
+			$rules = array();
+			
+		if ( !in_array( $product_id, $rules ) ) {
+			$rules[] = $product_id;
+			update_option( '_item-content-rule-buddypress-group-' . $term,  $rules );
+		}
+		
+	}
+	
+}
+add_action( 'it_exchange_membership_addon_update_content_access_diff_rules_options', 'it_exchange_membership_buddypress_addon_update_content_access_diff_rules_options', 10, 4 );
