@@ -212,3 +212,91 @@ function it_exchange_membership_buddypress_addon_update_content_access_diff_rule
 	}
 }
 add_action( 'it_exchange_membership_addon_update_content_access_diff_rules_options', 'it_exchange_membership_buddypress_addon_update_content_access_diff_rules_options', 10, 4 );
+
+
+/**
+ * This adds the BuddyPress restricted content to the Membership Dashboard
+ *
+ * @since 1.0.0
+ *
+ * @return void
+*/
+function it_exchange_membership_buddpress_addon_membership_content_dashboard_empty_restricted_posts_result( $result, $options, $selection, $selected, $value ) {
+
+	if ( 'bp-group' === $selection ) {
+		
+		if ( $group_id = groups_get_id( $value ) ) {
+		
+			$args = array( 'group_id' => $group_id );
+		
+			if ( $group = groups_get_group( $args ) ) { 
+	
+				$result .= $options['before'];
+								
+				$result .= '<li>';
+				$result .= '<div class="it-exchange-content-group it-exchange-content-single">';
+				$result .= '	<div class="it-exchange-content-item-icon">';
+				$result .= '		<a class="it-exchange-item-icon" href="' . bp_get_group_permalink( $group ) . '"></a>';
+				$result .= '	</div>';
+				$result .= '	<div class="it-exchange-content-item-info">';
+				$result .= '		<p class="it-exchange-group-content-label">';
+				$result .= '			<a href="' . bp_get_group_permalink( $group ) . '">';
+				$result .= '				<span class="it-exchange-item-title">' . $group->name . '</span>';
+				$result .= '			</a>';
+				$result .= '		</p>';
+				$result .= '	</div>';
+				$result .= '</div>';
+				$result .= '</li>';
+
+				$result .= $options['after'];
+			
+			}
+		
+		}
+		
+	}
+
+	return $result;
+	
+}
+add_filter( 'it_exchange_membership_addon_membership_content_dashboard_empty_restricted_posts_result', 'it_exchange_membership_buddpress_addon_membership_content_dashboard_empty_restricted_posts_result', 10, 5 );
+
+
+/**
+ * This adds the BuddyPress restricted content to the Membership Shortcode
+ *
+ * @since 1.0.0
+ *
+ * @return void
+*/
+function it_exchange_membership_buddpress_addon_membership_content_shortcode_empty_restricted_posts_result( $result, $atts, $selection, $selected, $value ) {
+
+	if ( 'bp-group' === $selection ) {
+		
+		if ( $group_id = groups_get_id( $value ) ) {
+		
+			$args = array( 'group_id' => $group_id );
+		
+			if ( $group = groups_get_group( $args ) ) { 
+	
+				$result .= $atts['before'];
+				
+				$result .= '<li>';	
+				$result .= '<div class="it-exchange-content-group it-exchange-content-single it-exchange-content-available">';
+				$result .= '	<div class="it-exchange-content-item-icon"><span class="it-exchange-item-icon"></span></div>';
+				$result .= '	<div class="it-exchange-content-item-info"><p class="it-exchange-group-content-label">' . $group->name . '</p></div>';
+				$result .= '</div>';
+				$result .= '</li>';
+
+				$result .= $atts['after'];
+			
+			}
+		
+		}
+		
+	}
+
+	return $result;
+	
+}
+add_filter( 'it_exchange_membership_addon_membership_content_shortcode_empty_restricted_posts_result', 'it_exchange_membership_buddpress_addon_membership_content_shortcode_empty_restricted_posts_result', 10, 5 );
