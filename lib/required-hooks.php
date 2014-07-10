@@ -6,6 +6,51 @@
 */
 
 /**
+ * Enqueues Membership scripts to WordPress Dashboard
+ *
+ * @since 1.0.0
+ *
+ * @param string $hook_suffix WordPress passed variable
+ * @return void
+*/
+function it_exchange_membership_buddypress_addon_admin_wp_enqueue_scripts( $hook_suffix ) {
+	if ( 'toplevel_page_bp-groups' === $hook_suffix ) {
+		wp_enqueue_script( 'it-exchange-membership-addon-add-edit-group', ITUtility::get_url_from_file( dirname( __FILE__ ) ) . '/js/add-edit-group.js', array( 'jquery' ) );
+	}
+}
+add_action( 'admin_enqueue_scripts', 'it_exchange_membership_buddypress_addon_admin_wp_enqueue_scripts' );
+
+/**
+ * Enqueues Membership styles to WordPress Dashboard
+ *
+ * @since 1.0.0
+ *
+ * @return void
+*/
+function it_exchange_membership_buddypress_addon_admin_wp_enqueue_styles() {
+	global $hook_suffix;
+	if ( 'toplevel_page_bp-groups' === $hook_suffix ) {
+		wp_enqueue_style( 'it-exchange-membership-addon-add-edit-group', ITUtility::get_url_from_file( dirname( __FILE__ ) ) . '/styles/add-edit-group.css' );
+	}
+}
+add_action( 'admin_print_styles', 'it_exchange_membership_buddypress_addon_admin_wp_enqueue_styles' );
+
+/**
+ * Enqueues Membership scripts to WordPress frontend
+ *
+ * @since 1.0.0
+ *
+ * @param string $current_view WordPress passed variable
+ * @return void
+*/
+function it_exchange_membership_buddypress_addon_bp_enqueue_scripts() {
+	// Frontend Membership Dashboard CSS & JS
+	wp_enqueue_script( 'it-exchange-membership-buddypress-addon-public-js', ITUtility::get_url_from_file( dirname( __FILE__ ) . '/assets/js/buddypress.js' ), array( 'jquery' ), false, true );
+	wp_enqueue_style( 'it-exchange-membership-buddypress-addon-public-css', ITUtility::get_url_from_file( dirname( __FILE__ ) . '/assets/styles/buddypress.css' ) );
+}
+add_action( 'bp_enqueue_scripts', 'it_exchange_membership_buddypress_addon_bp_enqueue_scripts' );
+
+/**
  * Adds Membership Metabox Options to Edit Group admin screen
  *
  * @since 1.0.0
@@ -28,17 +73,24 @@ add_action( 'bp_groups_admin_meta_boxes', 'it_exchange_membership_buddypress_add
 */
 function it_exchange_membership_buddypress_addon_bp_groups_admin_edit_metabox_membership_access( $group ) {		
 	$group_rules = get_option( '_item-content-rule-buddypress-group-' . $group->id, array() );
+	
+	if ( empty( $group_rules ) )
+		$hidden = 'hidden';
+	else
+		$hidden = '';
+
 	?>
 	<div>
 		<label for="it-exchange-group-membership-restriction">
 			<input id="it-exchange-group-membership-restriction" type="checkbox" name="it-exchange-group-membership-restriction" <?php checked( !empty( $group_rules ), true ); ?>/>
-			<strong><?php _e( 'Restrict this group to a membership.', 'buddypress' ); ?></strong>
+			<strong><?php _e( 'Restrict this group', 'buddypress' ); ?></strong>
 		</label>
 	</div>
 
-	<p><?php _e( 'Who can access this group?', 'LION' ); ?></p>
+	<div class="it-exchange-buddypress-group-memberships select <?php echo $hidden; ?>">
 
-	<div class="select">
+		<p><?php _e( 'Who can access this group?', 'LION' ); ?></p>
+		
 		<select multiple="multiple" name="it-exchange-group-memberships[]" size="5">
         <?php
         $membership_products = it_exchange_get_products( array( 'product_type' => 'membership-product-type', 'show_hidden' => true ) );
@@ -371,19 +423,25 @@ function it_exchange_membership_buddpress_addon_bp_after_group_settings_creation
 
 	$group_rules = get_option( '_item-content-rule-buddypress-group-' . $group_id, array() );
 	
+	if ( empty( $group_rules ) )
+		$hidden = 'it-exchange-hidden';
+	else
+		$hidden = '';
+	
 	?>
 	<h4><?php _e( 'iThemes Exchange Membership Options', 'LION' ); ?></h4>
 	
 	<div>
 		<label for="it-exchange-group-membership-restriction">
 			<input id="it-exchange-group-membership-restriction" type="checkbox" name="it-exchange-group-membership-restriction" <?php checked( !empty( $group_rules ), true ); ?>/>
-			<strong><?php _e( 'Restrict this group to a membership.', 'buddypress' ); ?></strong>
+			<strong><?php _e( 'Restrict this group', 'buddypress' ); ?></strong>
 		</label>
 	</div>
 
-	<p><?php _e( 'Who can access this group?', 'LION' ); ?></p>
-
-	<div class="select">
+	<div class="it-exchange-buddypress-group-memberships select <?php echo $hidden; ?>">
+	
+		<p><?php _e( 'Who can access this group?', 'LION' ); ?></p>
+		
 		<select multiple="multiple" name="it-exchange-group-memberships[]" size="5">
         <?php
         $membership_products = it_exchange_get_products( array( 'product_type' => 'membership-product-type', 'show_hidden' => true ) );
@@ -465,7 +523,7 @@ add_action( 'groups_create_group_step_save_group-settings', 'it_exchange_members
 function it_exchange_membership_buddpress_addon_bp_group_admin_edit_after( $group_id ) {
 
 	$group_rules = get_option( '_item-content-rule-buddypress-group-' . $group_id, array() );		
-	
+			
     $membership_products = it_exchange_get_products( array( 'product_type' => 'membership-product-type', 'show_hidden' => true ) );
     
     foreach( $membership_products as $membership ) {
