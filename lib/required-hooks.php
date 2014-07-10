@@ -6,6 +6,52 @@
 */
 
 /**
+ * Adds Membership Metabox Options to Edit Group admin screen
+ *
+ * @since 1.0.0
+ *
+ * @param int $group_id
+ * @return void
+*/
+function it_exchange_membership_buddypress_addon_bp_groups_admin_meta_boxes() {
+	add_meta_box( 'bp_group_membership_access', _x( 'Membership Access', 'LION' ), 'it_exchange_membership_buddypress_addon_bp_groups_admin_edit_metabox_membership_access', get_current_screen()->id, 'side', 'core' );
+}
+add_action( 'bp_groups_admin_meta_boxes', 'it_exchange_membership_buddypress_addon_bp_groups_admin_meta_boxes' );
+
+/**
+ * Outputs Membership Metabox Options in Edit Group admin screen
+ *
+ * @since 1.0.0
+ *
+ * @param int $group_id
+ * @return void
+*/
+function it_exchange_membership_buddypress_addon_bp_groups_admin_edit_metabox_membership_access( $group ) {		
+	$group_rules = get_option( '_item-content-rule-buddypress-group-' . $group->id, array() );
+	?>
+	<div>
+		<label for="it-exchange-group-membership-restriction">
+			<input id="it-exchange-group-membership-restriction" type="checkbox" name="it-exchange-group-membership-restriction" <?php checked( !empty( $group_rules ), true ); ?>/>
+			<strong><?php _e( 'Restrict this group to a membership.', 'buddypress' ); ?></strong>
+		</label>
+	</div>
+
+	<p><?php _e( 'Who can access this group?', 'LION' ); ?></p>
+
+	<div class="select">
+		<select multiple="multiple" name="it-exchange-group-memberships[]" size="5">
+        <?php
+        $membership_products = it_exchange_get_products( array( 'product_type' => 'membership-product-type', 'show_hidden' => true ) );
+		foreach ( $membership_products as $membership ) {				
+			echo '<option value="' . $membership->ID . '" ' . selected( in_array( $membership->ID, $group_rules ), true, false ) . '>' . get_the_title( $membership->ID ) . '</option>';
+		}
+        ?>
+		</select>
+	</div>
+	<?php
+}
+
+/**
  * Shows the nag when needed.
  *
  * @since 1.0.0
@@ -120,7 +166,7 @@ function it_exchange_membership_buddypress_addon_is_content_restricted( $restric
 			
 			$current_group = groups_get_current_group();
 			
-			$group_rules = get_option( '_item-content-rule-buddypress-group-' . $current_group->slug );
+			$group_rules = get_option( '_item-content-rule-buddypress-group-' . $current_group->id );
 			if ( !empty( $group_rules ) ) {
 				if ( empty( $member_access ) ) return true;
 				foreach( $member_access as $product_id => $txn_id ) {
@@ -172,12 +218,12 @@ function it_exchange_membership_buddypress_addon_get_custom_selected_options( $o
 		$groups = groups_get_groups( array( 'per_page' => false, 'show_hidden' => true, 'populate_extras' => false, 'update_meta_cache' => false ) );
 		foreach ( $groups['groups'] as $group ) {
 				
-			if ( $group->slug === $value )
+			if ( $group->id === $value )
 				$selected = 'selected="selected"';
 			else
 				$selected = '';
 				
-			$options .= '<option data-type="bp-group" value="' . $group->slug . '" ' . $selected . '>' . $group->name . '</option>';	
+			$options .= '<option data-type="bp-group" value="' . $group->id . '" ' . $selected . '>' . $group->name . '</option>';	
 		}
 	}
 	
@@ -204,10 +250,13 @@ function it_exchange_membership_buddypress_addon_update_content_access_diff_rule
 	if ( 'bp-groups' === $selected) {
 		if ( !( $rules = get_option( '_item-content-rule-buddypress-group-' . $term ) ) )
 			$rules = array();
-			
-		if ( !in_array( $product_id, $rules ) ) {
-			$rules[] = $product_id;
-			update_option( '_item-content-rule-buddypress-group-' . $term,  $rules );
+					
+		if( false !== $key = array_search( $product_id, $rules ) ) {
+			unset( $rules[$key] );
+			if ( empty( $rules ) )
+				delete_option( '_item-content-rule-buddypress-group-' . $term );
+			else
+				update_option( '_item-content-rule-buddypress-group-' . $term,  $rules );
 		}
 	}
 }
@@ -261,7 +310,6 @@ function it_exchange_membership_buddpress_addon_membership_content_dashboard_emp
 }
 add_filter( 'it_exchange_membership_addon_membership_content_dashboard_empty_restricted_posts_result', 'it_exchange_membership_buddpress_addon_membership_content_dashboard_empty_restricted_posts_result', 10, 5 );
 
-
 /**
  * This adds the BuddyPress restricted content to the Membership Shortcode
  *
@@ -300,3 +348,161 @@ function it_exchange_membership_buddpress_addon_membership_content_shortcode_emp
 	
 }
 add_filter( 'it_exchange_membership_addon_membership_content_shortcode_empty_restricted_posts_result', 'it_exchange_membership_buddpress_addon_membership_content_shortcode_empty_restricted_posts_result', 10, 5 );
+
+/**
+ * Displays Membership Options on Create Group templates
+ *
+ * @since 1.0.0
+ *
+ * @return void
+*/
+function it_exchange_membership_buddpress_addon_bp_after_group_settings_creation_step() {
+	global $bp;
+	
+	$checked = '';
+	
+	if ( !empty( $bp->groups->new_group_id ) ) {
+		$group_id = $bp->groups->new_group_id;
+	} else if ( !empty( $_COOKIE['bp_new_group_id'] ) ) {
+		$group_id = $_COOKIE['bp_new_group_id'];
+	} else {
+		$groupd_id = false;
+	}
+
+	$group_rules = get_option( '_item-content-rule-buddypress-group-' . $group_id, array() );
+	
+	?>
+	<h4><?php _e( 'iThemes Exchange Membership Options', 'LION' ); ?></h4>
+	
+	<div>
+		<label for="it-exchange-group-membership-restriction">
+			<input id="it-exchange-group-membership-restriction" type="checkbox" name="it-exchange-group-membership-restriction" <?php checked( !empty( $group_rules ), true ); ?>/>
+			<strong><?php _e( 'Restrict this group to a membership.', 'buddypress' ); ?></strong>
+		</label>
+	</div>
+
+	<p><?php _e( 'Who can access this group?', 'LION' ); ?></p>
+
+	<div class="select">
+		<select multiple="multiple" name="it-exchange-group-memberships[]" size="5">
+        <?php
+        $membership_products = it_exchange_get_products( array( 'product_type' => 'membership-product-type', 'show_hidden' => true ) );
+		foreach ( $membership_products as $membership ) {				
+			echo '<option value="' . $membership->ID . '" ' . selected( in_array( $membership->ID, $group_rules ), true, false ) . '>' . get_the_title( $membership->ID ) . '</option>';
+		}
+        ?>
+		</select>
+	</div>
+	<?php
+}
+add_action( 'bp_after_group_settings_creation_step', 'it_exchange_membership_buddpress_addon_bp_after_group_settings_creation_step' );
+
+/**
+ * Saves Membership Options from Create Group templates
+ *
+ * @since 1.0.0
+ *
+ * @return void
+*/
+function it_exchange_membership_buddpress_addon_groups_create_group_step_save_group_settings() {
+	
+	if ( isset( $_POST['group_id'] ) ) {
+	
+		$group_id = $_POST['group_id'];
+		$group_rules = get_option( '_item-content-rule-buddypress-group-' . $group_id, array() );		
+		
+        $membership_products = it_exchange_get_products( array( 'product_type' => 'membership-product-type', 'show_hidden' => true ) );
+        
+        foreach( $membership_products as $membership ) {
+        
+			$existing_access_rules = it_exchange_get_product_feature( $membership->ID, 'membership-content-access-rules' );
+			$membership_product_feature = it_exchange_get_product_feature( $membership->ID, 'membership-content-access-rules' );
+			$memberships = !empty( $_POST['it-exchange-group-memberships'] ) ? $_POST['it-exchange-group-memberships'] : array();
+			if ( empty( $_POST['it-exchange-group-membership-restriction'] ) )
+				$memberships = array();
+
+			if ( in_array( $membership->ID, $memberships ) ) {
+				
+				$value = array(
+					'selection' => 'bp-group',
+					'selected'  => 'bp-groups',
+					'term'      => $group_id,
+				);
+				if ( false === array_search( $value, $membership_product_feature ) ) {
+					$membership_product_feature[] = $value;
+					it_exchange_update_product_feature( $membership->ID, 'membership-content-access-rules', $membership_product_feature );
+					it_exchange_membership_buddypress_addon_update_content_access_rules_options( $membership->ID, 'bp-groups', 'bp-group', $group_id );
+				}
+
+			} else {
+				
+				$value = array(
+					'selection' => 'bp-group',
+					'selected'  => 'bp-groups',
+					'term'      => $group_id,
+				);	
+				if ( false !== $key = array_search( $value, $membership_product_feature ) ) {
+					unset( $membership_product_feature[$key] );
+					it_exchange_update_product_feature( $membership->ID, 'membership-content-access-rules', $membership_product_feature );
+					it_exchange_membership_buddypress_addon_update_content_access_diff_rules_options( $membership->ID, 'bp-groups', 'bp-group', $group_id );
+				}
+			}
+		}
+		
+	}
+
+}
+add_action( 'groups_create_group_step_save_group-settings', 'it_exchange_membership_buddpress_addon_groups_create_group_step_save_group_settings' );
+
+/**
+ * Saves Membership Options from Edit Group admin screen
+ *
+ * @since 1.0.0
+ *
+ * @param int $group_id
+ * @return void
+*/
+function it_exchange_membership_buddpress_addon_bp_group_admin_edit_after( $group_id ) {
+
+	$group_rules = get_option( '_item-content-rule-buddypress-group-' . $group_id, array() );		
+	
+    $membership_products = it_exchange_get_products( array( 'product_type' => 'membership-product-type', 'show_hidden' => true ) );
+    
+    foreach( $membership_products as $membership ) {
+    
+		$existing_access_rules = it_exchange_get_product_feature( $membership->ID, 'membership-content-access-rules' );
+		$membership_product_feature = it_exchange_get_product_feature( $membership->ID, 'membership-content-access-rules' );
+		$memberships = !empty( $_POST['it-exchange-group-memberships'] ) ? $_POST['it-exchange-group-memberships'] : array();
+		if ( empty( $_POST['it-exchange-group-membership-restriction'] ) )
+			$memberships = array();
+
+		if ( in_array( $membership->ID, $memberships ) ) {
+			
+			$value = array(
+				'selection' => 'bp-group',
+				'selected'  => 'bp-groups',
+				'term'      => $group_id,
+			);
+			if ( false === array_search( $value, $membership_product_feature ) ) {
+				$membership_product_feature[] = $value;
+				it_exchange_update_product_feature( $membership->ID, 'membership-content-access-rules', $membership_product_feature );
+				it_exchange_membership_buddypress_addon_update_content_access_rules_options( $membership->ID, 'bp-groups', 'bp-group', $group_id );
+			}
+
+		} else {
+			
+			$value = array(
+				'selection' => 'bp-group',
+				'selected'  => 'bp-groups',
+				'term'      => $group_id,
+			);	
+			if ( false !== $key = array_search( $value, $membership_product_feature ) ) {
+				unset( $membership_product_feature[$key] );
+				it_exchange_update_product_feature( $membership->ID, 'membership-content-access-rules', $membership_product_feature );
+				it_exchange_membership_buddypress_addon_update_content_access_diff_rules_options( $membership->ID, 'bp-groups', 'bp-group', $group_id );
+			}
+		}
+	}
+		
+}
+add_action( 'bp_group_admin_edit_after', 'it_exchange_membership_buddpress_addon_bp_group_admin_edit_after' );
