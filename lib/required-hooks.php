@@ -184,7 +184,7 @@ function it_exchange_membership_buddypress_addon_fix_post_id() {
 	global $post, $it_exchange_membership_buddypress_addon_post_id;
 	$it_exchange_membership_buddypress_addon_post_id = $post->ID;
 }
-add_filter( 'wp', 'it_exchange_membership_buddypress_addon_fix_post_id', 1 );
+add_action( 'wp', 'it_exchange_membership_buddypress_addon_fix_post_id', 1 );
 
 /**
  * We hook into 'the_content' (earlier than BuddyPress), so we check to see if the restricted or dripped
