@@ -176,7 +176,7 @@ add_filter( 'template_include', 'it_exchange_membership_buddypress_addon_templat
  * So, we hook into wp, grab the proper $post->ID before they possibly modify it
  * Then we set our own global to keep track of it (and reset it later)
  *
- * @since CHANGEME
+ * @since 1.1.0 
  *
  * @return void
 */
