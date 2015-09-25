@@ -181,8 +181,10 @@ add_filter( 'template_include', 'it_exchange_membership_buddypress_addon_templat
  * @return void
 */
 function it_exchange_membership_buddypress_addon_fix_post_id() {
-	global $post, $it_exchange_membership_buddypress_addon_post_id;
-	$it_exchange_membership_buddypress_addon_post_id = $post->ID;
+	if ( !is_admin() ) {
+		global $post, $it_exchange_membership_buddypress_addon_post_id;
+		$it_exchange_membership_buddypress_addon_post_id = $post->ID;
+	}
 }
 add_action( 'wp', 'it_exchange_membership_buddypress_addon_fix_post_id', 1 );
 
