@@ -9,3 +9,6 @@
 	Enhancement: Updated link to iThemes support.
 1.1.0 - 2015-09-18 - Lew Ayotte, Elise Alley
 	Fix bug caused by BuddyPress' setting their page's Post IDs to 0
+1.2.0 - 2015-10-06 - Lew Ayotte, Elise Alley
+	Don't run temp post_ID if we're in wp-admin
+	Changing an add_filter call to add_action
