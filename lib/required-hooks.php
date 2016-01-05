@@ -219,21 +219,40 @@ add_filter( 'the_content', 'it_exchange_membership_buddypress_addon_remove_bp_re
  *
  * @since 1.0.0
  *
- * @return void
+ * @param bool  $restriction
+ * @param array $member_access
+ *
+ * @return bool
 */
 function it_exchange_membership_buddypress_addon_is_content_restricted( $restriction, $member_access ) {
 	if ( !$restriction ) { //If it's already restricted, just skip this...
+
+		$bb_page_ids = bp_core_get_directory_page_ids();
+		$members = $bb_page_ids['members'] ? get_post( $bb_page_ids['members'] ) : null;
+
+		if ( $members && ( it_exchange_membership_addon_is_content_restricted( $members ) || it_exchange_membership_addon_is_content_dripped( $members ) ) ) {
+
+			if ( bp_is_user() ) {
+				$restriction = true;
+			}
+		}
 	
 		if ( bp_is_group() ) {
 			
 			$current_group = groups_get_current_group();
 			
 			$group_rules = get_option( '_item-content-rule-buddypress-group-' . $current_group->id );
+
 			if ( !empty( $group_rules ) ) {
-				if ( empty( $member_access ) ) return true;
+
+				if ( empty( $member_access ) ) {
+					return true;
+				}
+
 				foreach( $member_access as $product_id => $txn_id ) {
-					if ( in_array( $product_id, $group_rules ) )
-						return false;	
+					if ( in_array( $product_id, $group_rules ) ) {
+						return false;
+					}
 				}
 				$restriction = true;
 			}
@@ -437,7 +456,7 @@ function it_exchange_membership_buddpress_addon_bp_after_group_settings_creation
 		$hidden = 'it-exchange-hidden';
 	else
 		$hidden = '';
-	
+
 	?>
 	<h4><?php _e( 'iThemes Exchange Membership Options', 'LION' ); ?></h4>
 	
