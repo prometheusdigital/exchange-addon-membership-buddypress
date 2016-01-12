@@ -1,7 +1,7 @@
 <?php
 /*
  * Plugin Name: iThemes Exchange - Membership BuddyPress Add-on
- * Version: 1.2.0
+ * Version: 1.2.1
  * Description: Adds the iThemes Exchange Membership management functionality to BuddyPress
  * Plugin URI: http://ithemes.com/exchange/membership-buddypress/
  * Author: iThemes

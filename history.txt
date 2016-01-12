@@ -12,3 +12,6 @@
 1.2.0 - 2015-10-06 - Lew Ayotte, Elise Alley
 	Don't run temp post_ID if we're in wp-admin
 	Changing an add_filter call to add_action
+1.2.1 - 2016-01-12 - Timothy Jacobs, Elise Alley
+	Add: Block all member sub-pages if the BP members page is blocked.
+	Fix: Non object error
