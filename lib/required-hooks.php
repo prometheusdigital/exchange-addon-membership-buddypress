@@ -61,12 +61,12 @@ add_action( 'bp_enqueue_scripts', 'it_exchange_membership_buddypress_addon_bp_en
  *
  * @since 1.0.0
  *
- * @param int $group_id
- *
  * @return void
  */
 function it_exchange_membership_buddypress_addon_bp_groups_admin_meta_boxes() {
-	add_meta_box( 'bp_group_membership_access', _x( 'Membership Access', 'LION' ), 'it_exchange_membership_buddypress_addon_bp_groups_admin_edit_metabox_membership_access', get_current_screen()->id, 'side', 'core' );
+	add_meta_box( 'bp_group_membership_access', _x( 'Membership Access', 'LION' ),
+		'it_exchange_membership_buddypress_addon_bp_groups_admin_edit_metabox_membership_access',
+		get_current_screen()->id, 'side', 'core' );
 }
 
 add_action( 'bp_groups_admin_meta_boxes', 'it_exchange_membership_buddypress_addon_bp_groups_admin_meta_boxes' );
@@ -76,7 +76,7 @@ add_action( 'bp_groups_admin_meta_boxes', 'it_exchange_membership_buddypress_add
  *
  * @since 1.0.0
  *
- * @param int $group_id
+ * @param BP_Groups_Group $group
  *
  * @return void
  */
@@ -126,6 +126,7 @@ function it_exchange_membership_buddypress_addon_bp_groups_admin_edit_metabox_me
  * @return void
  */
 function it_exchange_membership_buddypress_addon_show_version_nag() {
+
 	include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
 
 	if ( ! interface_exists( 'IT_Exchange_Membership_Rule' ) ) {
@@ -171,14 +172,19 @@ add_action( 'admin_notices', 'it_exchange_membership_buddypress_addon_show_versi
  *
  * @since 1.0.0
  *
- * @return void
+ * @param string $template
+ *
+ * @return string
  */
 function it_exchange_membership_buddypress_addon_template_include( $template ) {
 	if ( function_exists( 'is_buddypress' ) && is_buddypress() ) {
 
-		global $it_exchange_membership_buddypress_addon_is_content_restricted, $it_exchange_membership_buddypress_addon_is_content_dripped, $post, $it_exchange_membership_buddypress_addon_post_id;
+		global $it_exchange_membership_buddypress_addon_is_content_restricted,
+		       $it_exchange_membership_buddypress_addon_is_content_dripped,
+		       $post, $it_exchange_membership_buddypress_addon_post_id;
 
-		$post->ID = $it_exchange_membership_buddypress_addon_post_id; //BuddyPress sets this to 0 sometimes... we want it to be the  actual page ID though, which we set in the it_exchange_membership_buddypress_addon_fix_post_id() function.
+		//BuddyPress sets this to 0 sometimes... we want it to be the  actual page ID though, which we set in the it_exchange_membership_buddypress_addon_fix_post_id() function.
+		$post->ID = $it_exchange_membership_buddypress_addon_post_id;
 
 		$it_exchange_membership_buddypress_addon_is_content_restricted = it_exchange_membership_addon_is_content_restricted();
 		$it_exchange_membership_buddypress_addon_is_content_dripped    = it_exchange_membership_addon_is_content_dripped();
@@ -220,11 +226,16 @@ add_action( 'wp', 'it_exchange_membership_buddypress_addon_fix_post_id', 1 );
  *
  * @since 1.0.0
  *
- * @return void
+ * @param string $content
+ *
+ * @return string
  */
 function it_exchange_membership_buddypress_addon_remove_bp_replace_the_content( $content ) {
 	if ( function_exists( 'is_buddypress' ) && is_buddypress() ) {
-		global $it_exchange_membership_buddypress_addon_is_content_restricted, $it_exchange_membership_buddypress_addon_is_content_dripped, $post, $it_exchange_membership_buddypress_addon_post_id;
+		global $it_exchange_membership_buddypress_addon_is_content_restricted,
+		       $it_exchange_membership_buddypress_addon_is_content_dripped,
+		       $post,
+		       $it_exchange_membership_buddypress_addon_post_id;
 
 		if ( $it_exchange_membership_buddypress_addon_is_content_restricted || $it_exchange_membership_buddypress_addon_is_content_dripped ) {
 			$post->ID = $it_exchange_membership_buddypress_addon_post_id; //BuddyPress sets this to 0 sometimes... we want it to be the  actual page ID though, which we set in the it_exchange_membership_buddypress_addon_fix_post_id() function.
@@ -384,8 +395,6 @@ add_filter( 'it_exchange_membership_rule_factory_make_rule', 'it_exchange_member
  */
 function it_exchange_membership_buddpress_addon_bp_after_group_settings_creation_step() {
 	global $bp;
-
-	$checked = '';
 
 	if ( ! empty( $bp->groups->new_group_id ) ) {
 		$group_id = $bp->groups->new_group_id;
