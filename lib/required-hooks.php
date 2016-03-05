@@ -307,7 +307,7 @@ function it_exchange_membership_buddypress_addon_modify_failed_rules( $failed_ru
 
 			foreach ( $membership_rules as $membership_rule ) {
 				if ( $membership_rule->get_term() == $current_group->id ) {
-					if ( ! it_exchange_membership_addon_is_customer_member_of( $membership ) ) {
+					if ( ! it_exchange_membership_addon_is_customer_member_of( $membership->ID ) ) {
 						$failed_rules[] = $membership_rule;
 					}
 				}
