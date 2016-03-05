@@ -44,8 +44,6 @@ add_action( 'admin_print_styles', 'it_exchange_membership_buddypress_addon_admin
  *
  * @since 1.0.0
  *
- * @param string $current_view WordPress passed variable
- *
  * @return void
  */
 function it_exchange_membership_buddypress_addon_bp_enqueue_scripts() {
@@ -419,7 +417,7 @@ function it_exchange_membership_buddpress_addon_bp_after_group_settings_creation
 		<label for="it-exchange-group-membership-restriction">
 			<input id="it-exchange-group-membership-restriction" type="checkbox"
 			       name="it-exchange-group-membership-restriction" <?php checked( ! empty( $group_rules ), true ); ?>/>
-			<strong><?php _e( 'Restrict this group', 'buddypress' ); ?></strong>
+			<strong><?php _e( 'Restrict this group', 'LION' ); ?></strong>
 		</label>
 	</div>
 
@@ -431,7 +429,8 @@ function it_exchange_membership_buddpress_addon_bp_after_group_settings_creation
 			<?php
 			$membership_products = it_exchange_get_products( array(
 				'product_type' => 'membership-product-type',
-				'show_hidden'  => true
+				'show_hidden'  => true,
+				'numberposts'  => - 1
 			) );
 			foreach ( $membership_products as $membership ) {
 				echo '<option value="' . $membership->ID . '" ' . selected( in_array( $membership->ID, $group_rules ), true, false ) . '>' . get_the_title( $membership->ID ) . '</option>';
