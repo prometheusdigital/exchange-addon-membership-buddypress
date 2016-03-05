@@ -171,7 +171,10 @@ class IT_Exchange_BuddyPress_Group_Rule extends IT_Exchange_Membership_Base_Cont
 	 * @inheritdoc
 	 */
 	public function get_more_content_url() {
-		return bp_get_group_permalink( $this->get_term() );
+
+		$group = groups_get_group( array( 'group_id' => $this->get_term() ) );
+
+		return bp_get_group_permalink( $group  );
 	}
 
 	/**
@@ -199,6 +202,9 @@ class IT_Exchange_BuddyPress_Group_Rule extends IT_Exchange_Membership_Base_Cont
 	 * @inheritdoc
 	 */
 	public function get_short_description() {
-		return bp_get_group_name( $this->get_term() );
+
+		$group = groups_get_group( array( 'group_id' => $this->get_term() ) );
+
+		return bp_get_group_name( $group );
 	}
 }
