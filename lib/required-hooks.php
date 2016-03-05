@@ -128,10 +128,10 @@ function it_exchange_membership_buddypress_addon_bp_groups_admin_edit_metabox_me
 function it_exchange_membership_buddypress_addon_show_version_nag() {
 	include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
 
-	if ( ! is_plugin_active( 'exchange-addon-membership/exchange-addon-membership.php' ) ) {
+	if ( ! class_exists( 'IT_Exchange_Membership_Rule' ) ) {
 		?>
 		<div id="it-exchange-add-on-required-plugin-nag" class="it-exchange-nag">
-			<?php _e( 'The Membership BuddyPress add-on requires the iThemes Exchange Membership addon. Please install it.', 'LION' ); ?>
+			<?php _e( 'The Membership BuddyPress add-on requires the iThemes Exchange Membership addon version 1.18 or greater. Please install it or upgrade your version.', 'LION' ); ?>
 		</div>
 		<script type="text/javascript">
 			jQuery(document).ready(function () {
