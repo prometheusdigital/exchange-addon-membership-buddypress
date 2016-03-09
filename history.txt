@@ -15,3 +15,6 @@
 1.2.1 - 2016-01-12 - Timothy Jacobs, Elise Alley
 	Add: Block all member sub-pages if the BP members page is blocked.
 	Fix: Non object error
+1.2.2 - 2016-02-09 - Timothy Jacobs, Elise Alley
+	Fix: Use new API for Group rules, fixing saving
+	Fix: Show all products when selecting group rules
