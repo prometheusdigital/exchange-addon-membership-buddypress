@@ -128,17 +128,17 @@ function it_exchange_membership_buddypress_addon_bp_groups_admin_edit_metabox_me
 function it_exchange_membership_buddypress_addon_show_version_nag() {
 	include_once( ABSPATH . 'wp-admin/includes/plugin.php' );
 
-	if ( ! interface_exists( 'IT_Exchange_Membership_Rule' ) ) {
+	if ( ! defined( 'ITE_MEMBERSHIP_PLUGIN_VERSION' ) || version_compare( ITE_MEMBERSHIP_PLUGIN_VERSION, '1.19.8', '<' ) ) {
 		?>
 		<div id="it-exchange-add-on-required-plugin-nag" class="it-exchange-nag">
-			<?php _e( 'The Membership BuddyPress add-on requires the iThemes Exchange Membership addon version 1.18 or greater. Please install it or upgrade your version.', 'LION' ); ?>
+			<?php _e( 'The Membership BuddyPress add-on requires the iThemes Exchange Membership addon version 1.19.8 or greater. Please install it or upgrade your version.', 'LION' ); ?>
 		</div>
 		<script type="text/javascript">
-			jQuery(document).ready(function () {
-				if (jQuery('.wrap > h2').length == '1') {
-					jQuery("#it-exchange-add-on-required-plugin-nag").insertAfter('.wrap > h2').addClass('after-h2');
+			jQuery( document ).ready( function () {
+				if ( jQuery( '.wrap > h2' ).length == '1' ) {
+					jQuery( "#it-exchange-add-on-required-plugin-nag" ).insertAfter( '.wrap > h2' ).addClass( 'after-h2' );
 				}
-			});
+			} );
 		</script>
 		<?php
 	}
@@ -149,11 +149,11 @@ function it_exchange_membership_buddypress_addon_show_version_nag() {
 			<?php _e( 'The Membership BuddyPress add-on requires BuddyPress plugin. Please install it.', 'LION' ); ?>
 		</div>
 		<script type="text/javascript">
-			jQuery(document).ready(function () {
-				if (jQuery('.wrap > h2').length == '1') {
-					jQuery("#it-exchange-add-on-required-plugin-nag").insertAfter('.wrap > h2').addClass('after-h2');
+			jQuery( document ).ready( function () {
+				if ( jQuery( '.wrap > h2' ).length == '1' ) {
+					jQuery( "#it-exchange-add-on-required-plugin-nag" ).insertAfter( '.wrap > h2' ).addClass( 'after-h2' );
 				}
-			});
+			} );
 		</script>
 		<?php
 	}
@@ -253,7 +253,7 @@ function it_exchange_membership_buddypress_addon_is_content_restricted( $restric
 	}
 
 	$bb_page_ids = bp_core_get_directory_page_ids();
-	$members     = $bb_page_ids[ 'members' ] ? get_post( $bb_page_ids[ 'members' ] ) : null;
+	$members     = $bb_page_ids['members'] ? get_post( $bb_page_ids['members'] ) : null;
 
 	if ( bp_is_user() ) {
 		$evaluator = new IT_Exchange_Membership_Rule_Evaluator_Service(
@@ -389,8 +389,8 @@ function it_exchange_membership_buddpress_addon_bp_after_group_settings_creation
 
 	if ( ! empty( $bp->groups->new_group_id ) ) {
 		$group_id = $bp->groups->new_group_id;
-	} else if ( ! empty( $_COOKIE[ 'bp_new_group_id' ] ) ) {
-		$group_id = $_COOKIE[ 'bp_new_group_id' ];
+	} else if ( ! empty( $_COOKIE['bp_new_group_id'] ) ) {
+		$group_id = $_COOKIE['bp_new_group_id'];
 	} else {
 		$group_id = false;
 	}
@@ -444,14 +444,14 @@ add_action( 'bp_after_group_settings_creation_step', 'it_exchange_membership_bud
  */
 function it_exchange_membership_buddpress_addon_groups_create_group_step_save_group_settings() {
 
-	if ( isset( $_POST[ 'group_id' ] ) ) {
+	if ( isset( $_POST['group_id'] ) ) {
 
 		require_once dirname( __FILE__ ) . '/class.rule.php';
 
-		$group_id = $_POST[ 'group_id' ];
+		$group_id = $_POST['group_id'];
 
 		$old_memberships = get_option( '_item-content-rule-buddypress-group-' . $group_id, array() );
-		$new_memberships = ! empty( $_POST[ 'it-exchange-group-memberships' ] ) ? $_POST[ 'it-exchange-group-memberships' ] : array();
+		$new_memberships = ! empty( $_POST['it-exchange-group-memberships'] ) ? $_POST['it-exchange-group-memberships'] : array();
 
 		$factory = new IT_Exchange_Membership_Rule_Factory();
 
@@ -500,7 +500,7 @@ add_action( 'groups_create_group_step_save_group-settings', 'it_exchange_members
 function it_exchange_membership_buddpress_addon_bp_group_admin_edit_after( $group_id ) {
 
 	$old_memberships = get_option( '_item-content-rule-buddypress-group-' . $group_id, array() );
-	$new_memberships = ! empty( $_POST[ 'it-exchange-group-memberships' ] ) ? $_POST[ 'it-exchange-group-memberships' ] : array();
+	$new_memberships = ! empty( $_POST['it-exchange-group-memberships'] ) ? $_POST['it-exchange-group-memberships'] : array();
 
 	$factory = new IT_Exchange_Membership_Rule_Factory();
 
