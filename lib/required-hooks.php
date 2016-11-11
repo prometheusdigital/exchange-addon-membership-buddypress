@@ -288,7 +288,7 @@ add_filter( 'it_exchange_membership_addon_is_content_restricted', 'it_exchange_m
  *
  * @param array $failed_rules
  *
- * @return bool
+ * @return array
  */
 function it_exchange_membership_buddypress_addon_modify_failed_rules( $failed_rules ) {
 
@@ -321,6 +321,10 @@ function it_exchange_membership_buddypress_addon_modify_failed_rules( $failed_ru
 					}
 				}
 			}
+		}
+
+		if ( count( $failed_rules ) < count( $group_rules ) ) {
+			return array();
 		}
 	}
 
