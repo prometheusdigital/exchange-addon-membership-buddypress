@@ -1,6 +1,6 @@
 <?php
 /**
- * iThemes Exchange Membership BuddyPress Add-on
+ * ExchangeWP Membership BuddyPress Add-on
  *
  * @package exchange-addon-membership-buddypress
  * @since   1.0.0
@@ -131,7 +131,7 @@ function it_exchange_membership_buddypress_addon_show_version_nag() {
 	if ( ! defined( 'ITE_MEMBERSHIP_PLUGIN_VERSION' ) || version_compare( ITE_MEMBERSHIP_PLUGIN_VERSION, '1.19.8', '<' ) ) {
 		?>
 		<div id="it-exchange-add-on-required-plugin-nag" class="it-exchange-nag">
-			<?php _e( 'The Membership BuddyPress add-on requires the iThemes Exchange Membership addon version 1.19.8 or greater. Please install it or upgrade your version.', 'LION' ); ?>
+			<?php _e( 'The Membership BuddyPress add-on requires the ExchangeWP Membership addon version 1.19.8 or greater. Please install it or upgrade your version.', 'LION' ); ?>
 		</div>
 		<script type="text/javascript">
 			jQuery( document ).ready( function () {
@@ -404,7 +404,7 @@ function it_exchange_membership_buddpress_addon_bp_after_group_settings_creation
 	}
 
 	?>
-	<h4><?php _e( 'iThemes Exchange Membership Options', 'LION' ); ?></h4>
+	<h4><?php _e( 'ExchangeWP Membership Options', 'LION' ); ?></h4>
 
 	<div>
 		<label for="it-exchange-group-membership-restriction">
