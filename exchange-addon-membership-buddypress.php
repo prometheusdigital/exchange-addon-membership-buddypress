@@ -57,11 +57,11 @@ function it_exchange_membership_buddypress_set_textdomain() {
 add_action( 'plugins_loaded', 'it_exchange_membership_buddypress_set_textdomain' );
 
 /**
- * Registers Plugin with iThemes updater class
+ * Registers Plugin with ExchangeWP updater class
  *
  * @since 1.0.0
  *
- * @param object $updater ithemes updater object
+ * @param object $updater exchangewp updater object
  * @return void
 */
 function exchange_membership_buddypress_plugin_updater() {
